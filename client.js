@@ -1,75 +1,116 @@
-var rec = require('node-record-lpcm16');
-var record = require('node-record-lpcm16');
-var request = require('request');
-var say = require('say');
-var snowboy = require("snowboy");
-var Detector = snowboy.Detector;
-var Models = snowboy.Models;
-var models = new Models();
+var rec = require('node-record-lpcm16'),
+    record = require('node-record-lpcm16'),
+    request = require('request'),
+    snowboy = require("snowboy"),
+    thunkify = require('thunkify-wrap'),
+    co = require('co'),
+    q = require('q');
+
+var Detector = snowboy.Detector,
+    Models = snowboy.Models,
+    models = new Models();
+
+var api = require('./api'),
+    response_handler = require('./response'),
+    speak = require('./speak');
 
 var is_recognizing = false;
-
 var witToken = 'UBBQSYVZACKPUKF5J7B3ZHGYDP7H45E3';
 
-exports.parseResult = function(err, resp, body) {
-    body = JSON.parse(body);
-    var query = body._text;
-    var url = "http://localhost:4567/api/ask?q=";
+models.add({
+    file: './resources/Brain.pmdl',
+    sensitivity: '0.4',
+    hotwords: 'brain'
+});
 
-    if (query && query !== "" && !is_recognizing) {
-        is_recognizing = true;
-        rec.stop();
-        try {
-            request(url + query, function(err, data) {
-                data = JSON.parse(data.body);
-                if (!err && data.msg && data.msg !== "") {
-                    console.log('P-Brain Says: ' + data.msg);
-                    say.speak(data.msg, 'Alex', 1.1, function(error) {
-                        if (error) {
-                            console.error(err);
-                        }
-                        is_recognizing = false;
-                    });
-                } else {
-                    is_recognizing = false;
-                }
-            });
-        } catch (e) {
-            console.log(e);
+var detector = new Detector({
+    resource: "./resources/common.res",
+    models: models,
+    audioGain: 2.0
+});
+
+var hotword = thunkify.event(detector, 'hotword');
+
+var hotword_recorder = record.start({
+    threshold: 0,
+    verbose: false
+});
+
+function* parseResult(body) {
+    try {
+        body = JSON.parse(body[0].body);
+        var query = body._text;
+        if (query && query !== "" && !is_recognizing) {
+            is_recognizing = true;
+            var response = yield api.get(query);
+            yield response_handler.handle(response);
+            is_recognizing = false;
         }
+    } catch (e) {
+        console.log(e);
+        speak.vocalize("Ooops, I didn't get that", 'Alex', 1.1);
     }
-};
+}
 
-var start_recognition = function() {
-    rec.start().pipe(request.post({
+function generatorify(fn, context) {
+    return function() {
+        var deferred = q.defer(),
+            callback = make_callback(deferred),
+            args = Array.prototype.slice.call(arguments).concat(callback);
+        fn.apply(context, args);
+        return deferred.promise;
+    };
+}
+
+function make_callback(deferred) {
+    return function(err) {
+        if (err) {
+            deferred.reject(err);
+        } else if (arguments.length < 2) {
+            deferred.resolve();
+        } else if (arguments.length === 2) {
+            deferred.resolve(arguments[1]);
+        } else {
+            deferred.resolve(Array.prototype.slice.call(arguments, 1));
+        }
+    };
+}
+
+function recognizer(callback) {
+    rec.start({
+        encoding: 'LINEAR16'
+    }).pipe(request.post({
         'url': 'https://api.wit.ai/speech?client=chromium&lang=en-us&output=json',
         'headers': {
             'Accept': 'application/vnd.wit.20160202+json',
             'Authorization': 'Bearer ' + witToken,
             'Content-Type': 'audio/wav'
         }
-    }, exports.parseResult));
-};
+    }, callback));
+}
 
-models.add({
-    file: './resources/Brain.pmdl',
-    sensitivity: '0.5',
-    hotwords: 'brain'
+function* start_recognition() {
+    var gen_recognizer = generatorify(recognizer);
+    var recognized = yield gen_recognizer();
+
+    yield parseResult(recognized);
+
+    rec.stop();
+}
+
+function* start_hotword_detection() {
+    yield hotword();
+    yield speak.vocalize_affirm();
+    yield start_recognition();
+    yield start_hotword_detection();
+}
+
+hotword_recorder.pipe(detector);
+
+co(function*() {
+    console.log("P-Brain Says: Say 'Hey Brain','Brain' or 'Okay Brain' followed by your command!");
+    yield start_hotword_detection();
+}).catch(function(err) {
+    console.log(err);
+    throw err;
 });
-
-var d = new Detector({
-    resource: "./resources/common.res",
-    models: models,
-    audioGain: 2.0
-});
-
-d.on('hotword', function(index, a, b, c) {
-    start_recognition();
-});
-
-var r = record.start({
-    threshold: 0,
-    verbose: false
-});
-
-r.pipe(d);

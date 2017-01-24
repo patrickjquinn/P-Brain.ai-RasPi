@@ -13,6 +13,11 @@
     "node-record-lpcm16": "*",
     "request": "*",
     "say": "*",
-    "snowboy": "*"
+    "snowboy": "*",
+    "thunkify-wrap": "*",
+    "co": "*",
+    "co-request": "*",
+    "play-sound": "*",
+    "q": "*"
   }
 }
