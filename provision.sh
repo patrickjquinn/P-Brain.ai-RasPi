@@ -21,11 +21,11 @@ rm -rf P-Brain.ai
 rm -rf node_modules
 sudo rm -rf "$CLIENT_DEPLOY_PATH"
 sudo mkdir "$CLIENT_DEPLOY_PATH"
-cp -R ./P-Brain.ai/* "$CLIENT_DEPLOY_PATH/"
+sudo cp -R ./* "$CLIENT_DEPLOY_PATH/"
 git clone https://github.com/patrickjquinn/P-Brain.ai.git
 sudo rm -rf "$SERVER_DEPLOY_PATH"
 sudo mkdir "$SERVER_DEPLOY_PATH"
-cp -R ./P-Brain.ai/* "$SERVER_DEPLOY_PATH/"
+sudo cp -R ./P-Brain.ai/* "$SERVER_DEPLOY_PATH/"
 
 # Node Dependencies
 cd "$SERVER_DEPLOY_PATH"
