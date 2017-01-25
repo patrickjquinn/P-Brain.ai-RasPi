@@ -2,7 +2,7 @@
 
 # Constants
 SERVER_DEPLOY_PATH="/opt/P-Brain.ai"
-CLIENT_DEPLOY_PATH="/opt/P-Brain.ai"
+CLIENT_DEPLOY_PATH="/opt/P-Brain.ai-client"
 
 # Dependencies
 echo "Installing P-Brain.ai dependencies..."
