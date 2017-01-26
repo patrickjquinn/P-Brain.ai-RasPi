@@ -15,6 +15,7 @@ sudo npm install -g node-gyp
 pip install pyaudio
 
 # Deploy
+sudo killall node
 echo -ne "Done"
 echo "Cloing P-Brain.ai server..."
 rm -rf P-Brain.ai
