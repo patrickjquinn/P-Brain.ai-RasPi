@@ -4,7 +4,9 @@ var rec = require('node-record-lpcm16'),
     snowboy = require("snowboy"),
     thunkify = require('thunkify-wrap'),
     co = require('co'),
-    q = require('q');
+    q = require('q'),
+    stdin = process.openStdin();
+
 
 var Detector = snowboy.Detector,
     Models = snowboy.Models,
@@ -19,14 +21,14 @@ var witToken = 'UBBQSYVZACKPUKF5J7B3ZHGYDP7H45E3';
 
 models.add({
     file: './resources/Brain.pmdl',
-    sensitivity: '0.37',
+    sensitivity: '0.35',
     hotwords: 'brain'
 });
 
 var detector = new Detector({
     resource: "./resources/common.res",
     models: models,
-    audioGain: 2.0
+    audioGain: 1.0
 });
 
 var hotword = thunkify.event(detector, 'hotword');
@@ -105,10 +107,24 @@ function* start_hotword_detection() {
     yield start_hotword_detection();
 }
 
+function console_input(query) {
+    return co(function*() {
+        query = query.toString().trim();
+        var response = yield api.get(query);
+        yield response_handler.handle(response);
+    }).catch(function(err) {
+        console.log(err);
+        throw err;
+    });
+};
+
+stdin.addListener("data",console_input);
+
 hotword_recorder.pipe(detector);
 
 co(function*() {
     console.log("P-Brain Says: Say 'Hey Brain','Brain' or 'Okay Brain' followed by your command!");
+    console.log("P-Brain Says: You can also type your command into the terminal!");
     yield start_hotword_detection();
 }).catch(function(err) {
     console.log(err);
