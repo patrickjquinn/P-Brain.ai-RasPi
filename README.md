@@ -8,6 +8,14 @@ Headless Client for P-Brain.ai Virtual Assistant on Raspberry Pi
 
 https://youtu.be/4_WPqYMKGII
 
+## Automatic Installer (Raspberry Pi Only!)
+
+Execute the following command on your Raspberry Pi to install P-Brain & the RasPi Client:
+
+````
+curl -sL https://raw.githubusercontent.com/patrickjquinn/P-Brain.ai-RasPi/master/raspberrypi.sh | bash
+````
+
 ## Install
 
 On Raspberry Pi (Or other Debian/Ubuntu machines) run `sudo apt-get install sox libsox-fmt-all`
