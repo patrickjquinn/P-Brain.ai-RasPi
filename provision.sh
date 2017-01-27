@@ -10,7 +10,7 @@ git pull https://github.com/patrickjquinn/P-Brain.ai-RasPi.git
 # Dependencies
 echo "Installing P-Brain.ai dependencies..."
 sudo apt-get update
-sudo apt-get install -y sox libsox-fmt-all swig3.0 python-pyaudio python3-pyaudio libatlas-base-dev nodejs build-essential
+sudo apt-get install -y sox libsox-fmt-all swig3.0 python-pyaudio python3-pyaudio libatlas-base-dev nodejs build-essential festival festvox-kallpc16k
 sudo npm install -g node-gyp
 pip install pyaudio
 

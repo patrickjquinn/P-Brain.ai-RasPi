@@ -18,7 +18,7 @@ curl -sL https://raw.githubusercontent.com/patrickjquinn/P-Brain.ai-RasPi/master
 
 ## Install
 
-On Raspberry Pi (Or other Debian/Ubuntu machines) run `sudo apt-get install sox libsox-fmt-all`
+On Raspberry Pi (Or other Debian/Ubuntu machines) run `sudo apt-get install sox libsox-fmt-all festival festvox-kallpc16k`
 
 Or on macOS run `brew install sox`
 

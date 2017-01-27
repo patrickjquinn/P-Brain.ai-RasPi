@@ -21,7 +21,7 @@ var witToken = 'UBBQSYVZACKPUKF5J7B3ZHGYDP7H45E3';
 
 models.add({
     file: './resources/Brain.pmdl',
-    sensitivity: '0.35',
+    sensitivity: '0.5',
     hotwords: 'brain'
 });
 
