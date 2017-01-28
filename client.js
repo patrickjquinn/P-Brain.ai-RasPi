@@ -94,7 +94,6 @@ function recognizer(callback) {
 }
 
 function* start_recognition() {
-    console.log('recognizing');
     var gen_recognizer = generatorify(recognizer);
     var recognized = yield gen_recognizer();
 
