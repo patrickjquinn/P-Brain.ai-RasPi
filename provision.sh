@@ -5,7 +5,7 @@ SERVER_DEPLOY_PATH="/opt/P-Brain.ai"
 CLIENT_DEPLOY_PATH="/opt/P-Brain.ai-client"
 
 # Get Latest Code
-git pull https://github.com/patrickjquinn/P-Brain.ai-RasPi.git
+git pull
 
 # Dependencies
 echo "Installing P-Brain.ai dependencies..."
