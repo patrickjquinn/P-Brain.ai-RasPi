@@ -6,7 +6,7 @@ say.speak = genify(say.speak);
 
 function* speak_msg(msg) {
     console.log('P-Brain Says: ' + msg);
-    yield say.speak(msg, 'Alex', '1.1');
+    yield say.speak(msg, null, '1.1');
     return;
 }
 
@@ -17,7 +17,7 @@ function* speak_affirmation() {
 
 function speak_msg_sync(msg) {
     console.log('P-Brain Says: ' + msg);
-    say_sync.speak(msg, 'Alex', '1.1');
+    say_sync.speak(msg, null, '1.1');
 }
 
 module.exports = {

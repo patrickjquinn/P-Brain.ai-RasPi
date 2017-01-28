@@ -1,4 +1,4 @@
-var rec = require('node-record-lpcm16'),
+const rec = require('node-record-lpcm16'),
     record = require('node-record-lpcm16'),
     request = require('request'),
     snowboy = require("snowboy"),
@@ -8,16 +8,16 @@ var rec = require('node-record-lpcm16'),
     stdin = process.openStdin();
 
 
-var Detector = snowboy.Detector,
+const Detector = snowboy.Detector,
     Models = snowboy.Models,
     models = new Models();
 
-var api = require('./api'),
+const api = require('./api'),
     response_handler = require('./response'),
     speak = require('./speak');
 
 var is_recognizing = false;
-var witToken = 'UBBQSYVZACKPUKF5J7B3ZHGYDP7H45E3';
+const witToken = 'UBBQSYVZACKPUKF5J7B3ZHGYDP7H45E3';
 
 models.add({
     file: './resources/Brain.pmdl',
@@ -25,26 +25,27 @@ models.add({
     hotwords: 'brain'
 });
 
-var detector = new Detector({
+const detector = new Detector({
     resource: "./resources/common.res",
     models: models,
     audioGain: 1.0
 });
 
-var hotword = thunkify.event(detector, 'hotword');
+const hotword = thunkify.event(detector, 'hotword');
 
-var hotword_recorder = record.start({
+const hotword_recorder = record.start({
     threshold: 0,
     verbose: false
 });
 
 function* parseResult(body) {
+    console.log(body);
     try {
         body = JSON.parse(body[0].body);
-        var query = body._text;
+        let query = body._text;
         if (query && query !== "" && !is_recognizing) {
             is_recognizing = true;
-            var response = yield api.get(query);
+            let response = yield api.get(query);
             yield response_handler.handle(response);
             is_recognizing = false;
         }
@@ -56,7 +57,7 @@ function* parseResult(body) {
 
 function generatorify(fn, context) {
     return function() {
-        var deferred = q.defer(),
+        let deferred = q.defer(),
             callback = make_callback(deferred),
             args = Array.prototype.slice.call(arguments).concat(callback);
         fn.apply(context, args);
@@ -82,16 +83,18 @@ function recognizer(callback) {
     rec.start({
         encoding: 'LINEAR16'
     }).pipe(request.post({
-        'url': 'https://api.wit.ai/speech?client=chromium&lang=en-us&output=json',
-        'headers': {
-            'Accept': 'application/vnd.wit.20160202+json',
-            'Authorization': 'Bearer ' + witToken,
-            'Content-Type': 'audio/wav'
-        }
+      'url'     : 'https://api.wit.ai/speech?client=chromium&lang=en-us&v=20160526',
+      'headers' : {
+        'Accept'        : 'application/vnd.wit.20160526+json',
+        'Authorization' : 'Bearer ' + witToken,
+        'Content-Type'  : 'audio/wav',
+        'Transfer-encoding' : 'chunked'
+      }
     }, callback));
 }
 
 function* start_recognition() {
+    console.log('recognizing');
     var gen_recognizer = generatorify(recognizer);
     var recognized = yield gen_recognizer();
 
@@ -101,10 +104,16 @@ function* start_recognition() {
 }
 
 function* start_hotword_detection() {
-    yield hotword();
-    yield speak.vocalize_affirm();
-    yield start_recognition();
-    yield start_hotword_detection();
+    try {
+        yield hotword();
+        yield speak.vocalize_affirm();
+        yield start_recognition();
+        yield start_hotword_detection();
+    } catch (e){
+        console.log(e);
+        throw e;
+    }
+    
 }
 
 function console_input(query) {
@@ -116,7 +125,7 @@ function console_input(query) {
         console.log(err);
         throw err;
     });
-};
+}
 
 stdin.addListener("data",console_input);
 
