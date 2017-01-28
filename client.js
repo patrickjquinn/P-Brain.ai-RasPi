@@ -39,7 +39,6 @@ const hotword_recorder = record.start({
 });
 
 function* parseResult(body) {
-    console.log(body);
     try {
         body = JSON.parse(body[0].body);
         let query = body._text;
