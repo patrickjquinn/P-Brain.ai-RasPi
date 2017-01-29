@@ -1,11 +1,10 @@
-var speak = require('../speak');
-var timer = require('../timer');
+const speak = require('../speak');
+const timer = require('../timer');
 
 function* handle_response(response) {
-    var intent = response.type;
-    var msg = response.msg;
-
-    var response_funct;
+    let intent = response.type;
+    let msg = response.msg;
+    let response_funct = speak.vocalize;
 
     switch (intent) {
         case "time":

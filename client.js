@@ -7,7 +7,6 @@ const rec = require('node-record-lpcm16'),
     q = require('q'),
     stdin = process.openStdin();
 
-
 const Detector = snowboy.Detector,
     Models = snowboy.Models,
     models = new Models();
@@ -38,7 +37,7 @@ const hotword_recorder = record.start({
     verbose: false
 });
 
-function* parseResult(body) {
+function * parseResult(body) {
     try {
         body = JSON.parse(body[0].body);
         let query = body._text;
@@ -92,16 +91,16 @@ function recognizer(callback) {
     }, callback));
 }
 
-function* start_recognition() {
-    var gen_recognizer = generatorify(recognizer);
-    var recognized = yield gen_recognizer();
+function * start_recognition() {
+    let gen_recognizer = generatorify(recognizer);
+    let recognized = yield gen_recognizer();
 
     yield parseResult(recognized);
 
     rec.stop();
 }
 
-function* start_hotword_detection() {
+function * start_hotword_detection() {
     try {
         yield hotword();
         yield speak.vocalize_affirm();
@@ -117,7 +116,7 @@ function* start_hotword_detection() {
 function console_input(query) {
     return co(function*() {
         query = query.toString().trim();
-        var response = yield api.get(query);
+        let response = yield api.get(query);
         yield response_handler.handle(response);
     }).catch(function(err) {
         console.log(err);
@@ -126,7 +125,6 @@ function console_input(query) {
 }
 
 stdin.addListener("data",console_input);
-
 hotword_recorder.pipe(detector);
 
 co(function*() {

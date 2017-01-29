@@ -1,16 +1,16 @@
-var say = require('say');
-var say_sync = require('say');
-var genify = require('thunkify-wrap').genify;
+let say = require('say'),
+	say_sync = require('say'),
+	genify = require('thunkify-wrap').genify;
 
 say.speak = genify(say.speak);
 
-function* speak_msg(msg) {
+function * speak_msg(msg) {
     console.log('P-Brain Says: ' + msg);
     yield say.speak(msg, null, '1.1');
     return;
 }
 
-function* speak_affirmation() {
+function * speak_affirmation() {
     console.log("P-Brain Says: I'm Listening?");
     return;
 }
