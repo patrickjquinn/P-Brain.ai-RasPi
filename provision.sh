@@ -9,8 +9,9 @@ git pull
 
 # Dependencies
 echo "Installing P-Brain.ai dependencies..."
+curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 sudo apt-get update
-sudo apt-get install -y sox libsox-fmt-all swig3.0 python-pyaudio python3-pyaudio libatlas-base-dev nodejs build-essential festival festvox-kallpc16k
+sudo apt-get install -y sox libsox-fmt-all swig3.0 python-pyaudio python3-pyaudio libatlas-base-dev nodejs build-essential nodejs festival festvox-kallpc16k
 sudo npm install -g node-gyp
 pip install pyaudio
 
