@@ -5,19 +5,17 @@ const snowboy = require('snowboy')
 const thunkify = require('thunkify-wrap')
 const co = require('co')
 const q = require('q')
-
-const stdin = process.openStdin()
-
-const Detector = snowboy.Detector
-const Models = snowboy.Models
-const models = new Models()
-
 const api = require('./api')
 const response_handler = require('./response')
 const speak = require('./speak')
 
-let is_recognizing = false
+const stdin = process.openStdin()
+const Detector = snowboy.Detector
+const Models = snowboy.Models
+const models = new Models()
 const witToken = 'UBBQSYVZACKPUKF5J7B3ZHGYDP7H45E3'
+
+let is_recognizing = false
 
 models.add({
     file: './resources/Brain.pmdl',

@@ -3,7 +3,7 @@ const timer = require('../timer')
 
 function * handle_response(response) {
     const intent = response.type
-    const msg = response.msg
+    const msg = response.msg.text
     let response_funct = speak.vocalize
 
     switch (intent) {
